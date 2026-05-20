@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "@/lib/utils/auth-client";
 import { useGlobals } from "@/providers/AppProvider";
 import { toast } from "react-toastify";
@@ -10,9 +10,12 @@ import { BsEnvelope, BsLock, BsGoogle, BsBook, BsEyeSlash, BsEye } from "react-i
 export default function LoginPage() {
   const { isDark } = useGlobals();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const redirectTo = searchParams.get("redirect") || "/";
 
   const handleLoginAction = async (formData) => {
     setLoading(true);
@@ -33,11 +36,11 @@ export default function LoginPage() {
     }
 
     toast.success("Welcome back!");
-    router.push("/");
+    router.push(redirectTo);
   };
 
   const handleGoogle = async () => {
-    await signIn.social({ provider: "google", callbackURL: "/" });
+    await signIn.social({ provider: "google", callbackURL: redirectTo });
   };
 
   return (
