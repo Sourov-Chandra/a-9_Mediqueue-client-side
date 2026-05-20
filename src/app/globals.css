@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "@heroui/styles"; 
+
 
 /* Add to your globals.css */
 /* html {
