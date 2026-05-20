@@ -1,9 +1,71 @@
-import React from 'react'
+import TutorCard from "@/components/TutorCard";
 
-const TutorsPage = () => {
-  return (
-    <div>TutorsPage</div>
-  )
+async function getTutors() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutors`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
 }
 
-export default TutorsPage
+export default async function TutorsPage() {
+  const tutors = await getTutors();
+
+  return (
+    <div className="relative min-h-screen bg-linear-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
+      <div
+        className="absolute inset-0 -z-10 opacity-[0.03] dark:opacity-[0.07]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, currentColor 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+        }}
+      />
+
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+  
+        <div className="mx-auto max-w-2xl text-center mb-16">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-sky-100 px-3.5 py-1.5 text-xs font-semibold text-sky-700 dark:bg-sky-900/30 dark:text-sky-300">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+            </span>
+            50+ Verified Tutors Online
+          </div>
+          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+            Find Your Perfect{" "}
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 to-indigo-600">
+              Tutor
+            </span>
+          </h1>
+          <p className="mt-4 text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
+            Browse, compare, and book personalized learning sessions with expert
+            educators worldwide.
+          </p>
+        </div>
+
+        {tutors.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {tutors.map((tutor) => (
+              <TutorCard key={tutor._id} tutor={tutor} />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="mb-4 text-6xl">🔍</div>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+              No tutors available
+            </h3>
+            <p className="mt-2 text-gray-500 dark:text-gray-400">
+              Check back soon or try adjusting your search.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
