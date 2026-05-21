@@ -31,7 +31,7 @@ export default async function RootLayout({ children }) {
       suppressHydrationWarning
     >
       <body className="h-full transition-colors duration-200">
-        <AppProvider initialTheme={theme}>
+        <AppProvider suppressHydrationWarning initialTheme={theme}>
           <Navbar />
           <main className="min-h-screen pt-16 pb-12 px-4 sm:px-6 lg:px-8">
             {children}
