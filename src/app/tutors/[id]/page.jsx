@@ -1,12 +1,35 @@
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import TutorDetails from "@/components/TutorDetails";
 
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/tutors/${id}`,
+    {
+      cache: "no-store",
+    },
+  );
+  if (!res.ok) return { title: "Tutor | MediQueue" };
+  const tutor = await res.json();
+  return {
+    title: `${tutor.name} | MediQueue`,
+    description: `Book a session with ${tutor.name} on MediQueue`,
+  };
+}
+
 async function getTutor(id) {
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/tutors/${id}`,
       {
         cache: "no-store",
+        headers: {
+          Cookie: `token=${token}`,
+        },
       },
     );
     if (!res.ok) return null;
@@ -24,3 +47,5 @@ export default async function TutorDetailsPage({ params }) {
 
   return <TutorDetails tutor={tutor} />;
 }
+
+

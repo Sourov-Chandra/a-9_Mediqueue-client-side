@@ -35,7 +35,9 @@ export default function TutorDetails({ tutor }) {
   const [myBookedSessionsList, setMyBookedSessionsList] = useState([]);
   const [fetchingBookings, setFetchingBookings] = useState(true);
 
+
   useEffect(() => {
+
     const fetchMyBookings = async () => {
       if (!session?.user?.email) {
         setFetchingBookings(false);
@@ -43,8 +45,12 @@ export default function TutorDetails({ tutor }) {
       }
 
       try {
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?studentEmail=${session.user.email}`,
+        {
+          credentials: "include", 
+        }
         );
 
         if (!response.ok) {
@@ -109,6 +115,7 @@ export default function TutorDetails({ tutor }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(bookingData),
+          credentials: "include",
         },
       );
 
@@ -123,6 +130,9 @@ export default function TutorDetails({ tutor }) {
 
       const refreshResponse = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?studentEmail=${session.user.email}`,
+        {
+          credentials: "include",
+        }
       );
       if (refreshResponse.ok) {
         const refreshedData = await refreshResponse.json();

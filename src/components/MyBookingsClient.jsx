@@ -22,6 +22,9 @@ useEffect(() => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?email=${session.user.email}`,
+        {
+          credentials: "include", 
+        },
       );
 
       if (!res.ok) {
@@ -73,6 +76,7 @@ const handleCancel = async () => {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "cancelled" }),
+        credentials: "include",
       },
     );
 

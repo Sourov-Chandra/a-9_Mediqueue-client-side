@@ -37,6 +37,12 @@ const SUBJECTS = [
   "Economics",
   "Accounting",
   "Islamic Studies",
+  "Cardiology & Anatomy",
+  "Data Science & AI",
+  "Early Childhood Development",
+  "Physiotherapy & Kinesiology",
+  "Organic Chemistry",
+  "Leadership & Mindset",
 ];
 
 const TEACHING_MODES = ["Online", "Offline", "Both"];
@@ -67,6 +73,9 @@ export default function MyTutorsClient() {
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/my-tutors?email=${encodeURIComponent(session.user.email)}`,
+        {
+          credentials: "include", 
+        }
         );
         if (!res.ok) throw new Error();
         const data = await res.json();
@@ -131,6 +140,7 @@ export default function MyTutorsClient() {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updatedTutor),
+          credentials: "include",
         },
       );
       if (!res.ok) throw new Error("Update failed");
@@ -159,7 +169,10 @@ export default function MyTutorsClient() {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/tutors/${deleteTarget._id}`,
-        { method: "DELETE" },
+        { 
+         method: "DELETE",
+         credentials: "include",
+         },
       );
       if (!res.ok) throw new Error("Delete failed");
 

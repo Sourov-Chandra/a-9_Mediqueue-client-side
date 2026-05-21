@@ -1,5 +1,10 @@
 import TutorCard from "@/components/TutorCard";
 
+export const metadata = {
+  title: "All Tutors | MediQueue",
+  description: "Browse all available tutors on MediQueue",
+};
+
 async function getTutors() {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutors`, {
