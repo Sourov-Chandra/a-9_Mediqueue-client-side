@@ -10,7 +10,7 @@ import {
 } from "react-icons/bs";
 import Link from "next/link";
 import TutorCard from "@/components/TutorCard";
-import BannerCarousel from "@/components/BannerCarousel"; // Move carousel to separate file
+import BannerCarousel from "@/components/BannerCarousel";
 
 async function getTutors() {
   try {

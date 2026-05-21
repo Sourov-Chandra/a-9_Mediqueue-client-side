@@ -51,7 +51,6 @@ export default function BannerCarousel() {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
-  // Auto-play
   useEffect(() => {
     const timer = setInterval(() => {
       nextSlide();
@@ -59,7 +58,6 @@ export default function BannerCarousel() {
     return () => clearInterval(timer);
   }, []);
 
-  // Touch handlers for mobile swipe
   const handleTouchStart = (e) => {
     setTouchStart(e.targetTouches[0].clientX);
   };
@@ -70,11 +68,9 @@ export default function BannerCarousel() {
 
   const handleTouchEnd = () => {
     if (touchStart - touchEnd > 50) {
-      // Swipe left
       nextSlide();
     }
     if (touchStart - touchEnd < -50) {
-      // Swipe right
       prevSlide();
     }
     setTouchStart(0);
@@ -89,10 +85,6 @@ export default function BannerCarousel() {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* 
-        Slides Container 
-        Note: Replaced arbitrary values (h-125, h-150) with standard Tailwind heights or arbitrary explicit layouts [height] 
-      */}
       <div className="relative h-110 sm:h-150 md:h-210 lg:h-215 w-full overflow-hidden">
         <div
           className="flex transition-transform duration-500 ease-in-out h-full w-full"

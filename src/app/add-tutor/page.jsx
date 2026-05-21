@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useSession } from "@/lib/utils/auth-client";
 import { useGlobals } from "@/providers/AppProvider";
 import { toast } from "react-toastify";
+import { Spinner } from "@heroui/react";
 import {
   BsPerson,
   BsImage,
@@ -19,7 +20,6 @@ import {
   BsLaptop,
   BsInfoCircle,
   BsGlobe,
-  BsToggleOn,
 } from "react-icons/bs";
 
 const SUBJECTS = [
@@ -62,7 +62,6 @@ const LANGUAGES = [
   "Russian",
 ];
 
-// Time slot presets
 const TIME_SLOT_PRESETS = [
   "9:00 AM - 12:00 PM",
   "10:00 AM - 1:00 PM",
@@ -88,14 +87,26 @@ export default function AddTutorPage() {
   const [sessionEndDate, setSessionEndDate] = useState(null);
   const [selectedDays, setSelectedDays] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [timeSlotMode, setTimeSlotMode] = useState("preset"); // "preset" or "custom"
+  const [timeSlotMode, setTimeSlotMode] = useState("preset");
   const [customTimeSlot, setCustomTimeSlot] = useState("");
   const [selectedPreset, setSelectedPreset] = useState("");
+  const [experienceValue, setExperienceValue] = useState("");
 
   const toggleDay = (day) => {
     setSelectedDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
     );
+  };
+
+  const handleExperienceChange = (e) => {
+    let value = e.target.value;
+    let numericValue = value.replace(/\s*years?/i, "").trim();
+
+    if (numericValue && !isNaN(numericValue)) {
+      setExperienceValue(`${numericValue} years`);
+    } else {
+      setExperienceValue(value);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -115,7 +126,6 @@ export default function AddTutorPage() {
       return;
     }
 
-    // Validate time slot
     let finalTimeSlot = "";
     if (timeSlotMode === "preset") {
       if (!selectedPreset || selectedPreset === "Custom Time") {
@@ -128,7 +138,6 @@ export default function AddTutorPage() {
         toast.error("Please enter a valid time slot");
         return;
       }
-      // Validate if custom time contains AM/PM
       if (!customTimeSlot.match(/(AM|PM)/i)) {
         toast.warning("Consider adding AM/PM to your time slot for clarity");
       }
@@ -157,7 +166,7 @@ export default function AddTutorPage() {
       sessionStartDate: sessionStartDate.toISOString(),
       sessionEndDate: sessionEndDate.toISOString(),
       institution: formData.get("institution"),
-      experience: formData.get("experience"),
+      experience: experienceValue || formData.get("experience"),
       location: formData.get("location"),
       teachingMode: formData.get("teachingMode"),
       about: aboutText,
@@ -187,6 +196,7 @@ export default function AddTutorPage() {
       setSelectedPreset("");
       setCustomTimeSlot("");
       setTimeSlotMode("preset");
+      setExperienceValue("");
 
       // router.push("/my-tutors");
       // router.refresh();
@@ -226,7 +236,7 @@ export default function AddTutorPage() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className={labelClass}>Tutor Name *</label>
+            <label className={labelClass}>Full Name *</label>
             <div className="relative">
               <BsPerson
                 className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-gray-500" : "text-gray-400"}`}
@@ -237,14 +247,14 @@ export default function AddTutorPage() {
                 name="name"
                 required
                 disabled={isSubmitting}
-                placeholder="Full name"
+                placeholder="e.g., John Doe"
                 className={`${inputClass} pl-9`}
               />
             </div>
           </div>
 
           <div>
-            <label className={labelClass}>Photo URL *</label>
+            <label className={labelClass}>Profile Photo URL *</label>
             <div className="relative">
               <BsImage
                 className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-gray-500" : "text-gray-400"}`}
@@ -255,7 +265,7 @@ export default function AddTutorPage() {
                 name="image"
                 required
                 disabled={isSubmitting}
-                placeholder="https://imgbb.com/..."
+                placeholder="https://example.com/photo.jpg"
                 className={`${inputClass} pl-9`}
               />
             </div>
@@ -274,7 +284,7 @@ export default function AddTutorPage() {
                 disabled={isSubmitting}
                 className={`${inputClass} pl-9 cursor-pointer`}
               >
-                <option value="">Select a subject</option>
+                <option value="">-- Select a subject --</option>
                 {SUBJECTS.map((s) => (
                   <option key={s} value={s}>
                     {s}
@@ -285,7 +295,7 @@ export default function AddTutorPage() {
           </div>
 
           <div>
-            <label className={labelClass}>Language *</label>
+            <label className={labelClass}>Teaching Language *</label>
             <div className="relative">
               <BsGlobe
                 className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-gray-500" : "text-gray-400"}`}
@@ -297,7 +307,7 @@ export default function AddTutorPage() {
                 disabled={isSubmitting}
                 className={`${inputClass} pl-9 cursor-pointer`}
               >
-                <option value="">Select language</option>
+                <option value="">-- Select language --</option>
                 {LANGUAGES.map((lang) => (
                   <option key={lang} value={lang}>
                     {lang}
@@ -327,6 +337,11 @@ export default function AddTutorPage() {
                 </button>
               ))}
             </div>
+            <p
+              className={`text-xs mt-1.5 ${isDark ? "text-gray-500" : "text-gray-400"}`}
+            >
+              Select all days the tutor is available
+            </p>
           </div>
 
           <div>
@@ -374,7 +389,7 @@ export default function AddTutorPage() {
                   disabled={isSubmitting}
                   className={`${inputClass} pl-9 cursor-pointer`}
                 >
-                  <option value="">Select a time slot</option>
+                  <option value="">-- Choose a time slot --</option>
                   {TIME_SLOT_PRESETS.map((slot) => (
                     <option key={slot} value={slot}>
                       {slot}
@@ -394,23 +409,23 @@ export default function AddTutorPage() {
                   onChange={(e) => setCustomTimeSlot(e.target.value)}
                   required={timeSlotMode === "custom"}
                   disabled={isSubmitting}
-                  placeholder="e.g. 9:00 AM - 5:00 PM"
+                  placeholder="e.g., 9:00 AM - 5:00 PM"
                   className={`${inputClass} pl-9`}
                 />
               </div>
             )}
             <p
-              className={`text-xs mt-1 ${isDark ? "text-gray-500" : "text-gray-400"}`}
+              className={`text-xs mt-1.5 ${isDark ? "text-gray-500" : "text-gray-400"}`}
             >
               {timeSlotMode === "preset"
-                ? "Choose from common time slots"
-                : "Enter custom time with AM/PM format"}
+                ? "Choose from common time slots for daily availability"
+                : "Enter custom time with AM/PM format (e.g., 9:00 AM - 5:00 PM)"}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelClass}>Hourly Fee ($) *</label>
+              <label className={labelClass}>Hourly Rate (USD) *</label>
               <div className="relative">
                 <BsCurrencyDollar
                   className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-gray-500" : "text-gray-400"}`}
@@ -421,14 +436,15 @@ export default function AddTutorPage() {
                   name="hourlyRate"
                   required
                   min="1"
+                  step="0.5"
                   disabled={isSubmitting}
-                  placeholder="e.g. 50"
+                  placeholder="e.g., 50"
                   className={`${inputClass} pl-9`}
                 />
               </div>
             </div>
             <div>
-              <label className={labelClass}>Total Slot *</label>
+              <label className={labelClass}>Total Slots Available *</label>
               <div className="relative">
                 <BsHash
                   className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-gray-500" : "text-gray-400"}`}
@@ -440,7 +456,7 @@ export default function AddTutorPage() {
                   required
                   min="1"
                   disabled={isSubmitting}
-                  placeholder="e.g. 10"
+                  placeholder="e.g., 10"
                   className={`${inputClass} pl-9`}
                 />
               </div>
@@ -450,11 +466,9 @@ export default function AddTutorPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Session Start Date *</label>
-              <div
-                className={`relative flex items-center border rounded-lg overflow-hidden ${isDark ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-gray-50"} ${isSubmitting ? "opacity-50" : ""}`}
-              >
+              <div className="relative">
                 <BsCalendar
-                  className={`ml-3 shrink-0 ${isDark ? "text-gray-500" : "text-gray-400"}`}
+                  className={`absolute left-3 top-1/2 -translate-y-1/2 z-10 ${isDark ? "text-gray-500" : "text-gray-400"}`}
                   size={15}
                 />
                 <DatePicker
@@ -462,28 +476,36 @@ export default function AddTutorPage() {
                   onChange={(date) =>
                     !isSubmitting && setSessionStartDate(date)
                   }
-                  placeholderText="Start date"
+                  selectsStart
+                  startDate={sessionStartDate}
+                  endDate={sessionEndDate}
+                  placeholderText="Select start date"
                   disabled={isSubmitting}
-                  className={`w-full px-3 py-2.5 text-sm outline-none bg-transparent ${isDark ? "text-white placeholder-gray-500" : "text-gray-900 placeholder-gray-400"}`}
+                  dateFormat="MMMM d, yyyy"
+                  className={`${inputClass} pl-9 cursor-pointer`}
+                  wrapperClassName="w-full"
                 />
               </div>
             </div>
             <div>
               <label className={labelClass}>Session End Date *</label>
-              <div
-                className={`relative flex items-center border rounded-lg overflow-hidden ${isDark ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-gray-50"} ${isSubmitting ? "opacity-50" : ""}`}
-              >
+              <div className="relative">
                 <BsCalendar
-                  className={`ml-3 shrink-0 ${isDark ? "text-gray-500" : "text-gray-400"}`}
+                  className={`absolute left-3 top-1/2 -translate-y-1/2 z-10 ${isDark ? "text-gray-500" : "text-gray-400"}`}
                   size={15}
                 />
                 <DatePicker
                   selected={sessionEndDate}
                   onChange={(date) => !isSubmitting && setSessionEndDate(date)}
-                  placeholderText="End date"
+                  selectsEnd
+                  startDate={sessionStartDate}
+                  endDate={sessionEndDate}
                   minDate={sessionStartDate}
+                  placeholderText="Select end date"
                   disabled={isSubmitting}
-                  className={`w-full px-3 py-2.5 text-sm outline-none bg-transparent ${isDark ? "text-white placeholder-gray-500" : "text-gray-900 placeholder-gray-400"}`}
+                  dateFormat="MMMM d, yyyy"
+                  className={`${inputClass} pl-9 cursor-pointer`}
+                  wrapperClassName="w-full"
                 />
               </div>
             </div>
@@ -491,7 +513,7 @@ export default function AddTutorPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelClass}>Institution *</label>
+              <label className={labelClass}>Institution / University *</label>
               <div className="relative">
                 <BsBuilding
                   className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-gray-500" : "text-gray-400"}`}
@@ -502,13 +524,13 @@ export default function AddTutorPage() {
                   name="institution"
                   required
                   disabled={isSubmitting}
-                  placeholder="e.g. BUET"
+                  placeholder="e.g., Bangladesh University of Engineering & Technology"
                   className={`${inputClass} pl-9`}
                 />
               </div>
             </div>
             <div>
-              <label className={labelClass}>Experience *</label>
+              <label className={labelClass}>Teaching Experience *</label>
               <div className="relative">
                 <BsPerson
                   className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDark ? "text-gray-500" : "text-gray-400"}`}
@@ -517,12 +539,20 @@ export default function AddTutorPage() {
                 <input
                   type="text"
                   name="experience"
+                  value={experienceValue}
+                  onChange={handleExperienceChange}
                   required
                   disabled={isSubmitting}
-                  placeholder="e.g. 3 years"
+                  placeholder="e.g., 5"
                   className={`${inputClass} pl-9`}
                 />
               </div>
+              <p
+                className={`text-xs mt-1.5 ${isDark ? "text-gray-500" : "text-gray-400"}`}
+              >
+                Enter number only - &quot;years&quot; will be added
+                automatically
+              </p>
             </div>
           </div>
 
@@ -538,7 +568,7 @@ export default function AddTutorPage() {
                 name="location"
                 required
                 disabled={isSubmitting}
-                placeholder="e.g. Dhanmondi, Dhaka"
+                placeholder="e.g., Dhanmondi, Dhaka, Bangladesh"
                 className={`${inputClass} pl-9`}
               />
             </div>
@@ -557,7 +587,7 @@ export default function AddTutorPage() {
                 disabled={isSubmitting}
                 className={`${inputClass} pl-9 cursor-pointer`}
               >
-                <option value="">Select mode</option>
+                <option value="">-- Select teaching mode --</option>
                 {TEACHING_MODES.map((m) => (
                   <option key={m} value={m}>
                     {m}
@@ -568,7 +598,7 @@ export default function AddTutorPage() {
           </div>
 
           <div>
-            <label className={labelClass}>About (Optional)</label>
+            <label className={labelClass}>About the Tutor (Optional)</label>
             <div className="relative">
               <BsInfoCircle
                 className={`absolute left-3 top-3 ${isDark ? "text-gray-500" : "text-gray-400"}`}
@@ -578,12 +608,12 @@ export default function AddTutorPage() {
                 name="about"
                 rows="4"
                 disabled={isSubmitting}
-                placeholder="Tell us about the tutor's teaching style, expertise, and approach..."
+                placeholder="Describe the tutor's teaching philosophy, areas of expertise, notable achievements, and approach to student success..."
                 className={`${inputClass} pl-9 resize-none`}
               />
             </div>
             <p
-              className={`text-xs mt-1 ${isDark ? "text-gray-500" : "text-gray-400"}`}
+              className={`text-xs mt-1.5 ${isDark ? "text-gray-500" : "text-gray-400"}`}
             >
               Leave empty to use a default description
             </p>
@@ -592,32 +622,13 @@ export default function AddTutorPage() {
           <button
             type="submit"
             disabled={isSubmitting || loading}
-            className="w-full py-3 rounded-xl bg-sky-600 hover:bg-sky-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold transition shadow mt-2 relative"
+            className="w-full py-3 rounded-xl bg-sky-600 hover:bg-sky-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold transition shadow mt-2 relative flex items-center justify-center gap-2"
           >
             {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg
-                  className="animate-spin h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Adding Tutor...
-              </span>
+              <>
+                <Spinner size="sm" color="white" />
+                <span>Adding Tutor...</span>
+              </>
             ) : (
               "Add Tutor"
             )}
