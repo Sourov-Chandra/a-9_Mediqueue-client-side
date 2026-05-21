@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 
 const privateRoutes = ["/add-tutor", "/my-tutors", "/my-bookings", "/tutors/"];
 
-export function proxy(request) {
+export default function proxy(request) {
   const { pathname } = request.nextUrl;
   const session = request.cookies.get("better-auth.session_token");
+
+  console.log("middleware hit:", pathname);
 
   const isPrivate = privateRoutes.some((route) => pathname.startsWith(route));
 
