@@ -4,7 +4,12 @@ const privateRoutes = ["/add-tutor", "/my-tutors", "/my-bookings", "/tutors/"];
 
 export default function proxy(request) {
   const { pathname } = request.nextUrl;
-  const session = request.cookies.get("better-auth.session_token");
+
+  console.log("All cookies:", request.cookies.getAll());
+
+  const session =
+    request.cookies.get("__Secure-better-auth.session_token") ||
+    request.cookies.get("better-auth.session_token");
 
   console.log("middleware hit:", pathname);
 

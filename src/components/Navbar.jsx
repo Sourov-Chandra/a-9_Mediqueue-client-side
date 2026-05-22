@@ -19,7 +19,7 @@ import { signOut, useSession } from "@/lib/utils/auth-client";
 import { useGlobals } from "@/providers/AppProvider";
 import { toast } from "react-toastify";
 import Image from "next/image";
-import { clearJWT, issueJWT } from "@/lib/utils/jwt";
+import { clearJWT, getToken, issueJWT } from "@/lib/utils/jwt";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,12 +29,12 @@ export default function Navbar() {
   const router = useRouter();
   const { isDark } = useGlobals();
   const { data: session, isPending } = useSession();
+
   useEffect(() => {
-    if (session?.user?.email) {
+    if (session?.user?.email && !getToken()) {
       issueJWT(session.user.email);
     }
   }, [session]);
-
   useEffect(() => {
     function handleClickOutside(event) {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
@@ -49,11 +49,11 @@ export default function Navbar() {
   const userEmail = session?.user?.email || null;
 
   const handleLogout = async () => {
+    await clearJWT();
     await signOut();
     setProfileOpen(false);
-    await clearJWT();
     toast.success("Logged out successfully");
-    router.push("/");
+    window.location.href = "/";
   };
 
   const navLinks = [

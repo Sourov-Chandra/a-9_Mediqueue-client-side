@@ -4,6 +4,7 @@ import { useSession } from "@/lib/utils/auth-client";
 import { useGlobals } from "@/providers/AppProvider";
 import { toast } from "react-toastify";
 import { BsX, BsExclamationTriangle } from "react-icons/bs";
+import { authFetch } from "@/lib/utils/jwt";
 
 export default function MyBookingsClient() {
   const { isDark } = useGlobals();
@@ -19,17 +20,18 @@ useEffect(() => {
   if (!session?.user?.email) return;
 
   const fetchBookings = async () => {
+    setLoading(true);
+
     try {
-      const res = await fetch(
+      const res = await authFetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?email=${session.user.email}`,
         {
-          credentials: "include", 
+          credentials: "include",
         },
       );
 
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Server responded with ${res.status}: ${errorText}`);
+        throw new Error("Failed to fetch bookings");
       }
 
       const data = await res.json();
@@ -37,19 +39,15 @@ useEffect(() => {
       if (Array.isArray(data)) {
         setBookings(data);
       } else {
-        console.error("Expected an array of bookings but received:", data);
         setBookings([]);
       }
-    } catch (error) {
-      console.error("Fetch bookings failed:", error);
-      toast.error("Failed to load bookings");
     } finally {
       setLoading(false);
     }
   };
 
   fetchBookings();
-}, [session]);
+}, [session?.user?.email]);
 
   const openCancelModal = (booking) => {
     setCancelTarget(booking);
@@ -70,7 +68,7 @@ const handleCancel = async () => {
 
   setCancelLoading(true);
   try {
-    const res = await fetch(
+    const res = await authFetch(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings/${targetId}`,
       {
         method: "PATCH",

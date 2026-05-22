@@ -21,6 +21,7 @@ import {
   BsInfoCircle,
   BsGlobe,
 } from "react-icons/bs";
+import { authFetch } from "@/lib/utils/jwt";
 
 const SUBJECTS = [
   "Mathematics",
@@ -176,12 +177,14 @@ export default function AddTutorForm() {
     };
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutors`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tutor),
-        credentials: "include",
-      });
+      const res = await authFetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/tutors`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(tutor),
+        },
+      );
 
       if (!res.ok) {
         const errorData = await res.json();

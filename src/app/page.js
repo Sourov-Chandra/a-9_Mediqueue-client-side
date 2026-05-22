@@ -11,10 +11,11 @@ import {
 import Link from "next/link";
 import TutorCard from "@/components/TutorCard";
 import BannerCarousel from "@/components/BannerCarousel";
+import { authFetch } from "@/lib/utils/jwt";
 
 async function getTutors() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutors`, {
+    const res = await authFetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutors`, {
       cache: "no-store",
     });
     if (!res.ok) return [];

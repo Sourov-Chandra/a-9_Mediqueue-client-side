@@ -1,6 +1,6 @@
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import TutorDetails from "@/components/TutorDetails";
+
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
@@ -20,16 +20,11 @@ export async function generateMetadata({ params }) {
 
 async function getTutor(id) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
 
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/tutors/${id}`,
       {
-        cache: "no-store",
-        headers: {
-          Cookie: `token=${token}`,
-        },
+        cache: "no-store"
       },
     );
     if (!res.ok) return null;

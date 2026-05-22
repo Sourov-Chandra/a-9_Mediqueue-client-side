@@ -30,27 +30,6 @@ export default function LoginPage() {
 
   const redirectTo = searchParams.get("redirect") || "/";
 
-  /*  const handleLoginAction = async (formData) => {
-    setLoading(true);
-    setError("");
-
-    const email = formData.get("email");
-    const password = formData.get("password");
-
-    const { error: signInError } = await signIn.email({
-      email,
-      password,
-    });
-
-    if (signInError) {
-      setError(signInError.message || "Invalid email or password");
-      setLoading(false);
-      return;
-    }
-
-    toast.success("Welcome back!");
-    router.push(redirectTo);
-  }; */
 
   const handleLoginAction = async (formData) => {
     setLoading(true);
@@ -69,12 +48,14 @@ export default function LoginPage() {
 
     await issueJWT(email); 
     toast.success("Welcome back!");
-    router.push(redirectTo);
+    window.location.href = redirectTo; 
   };
 
-  const handleGoogle = async () => {
-    await signIn.social({ provider: "google", callbackURL: redirectTo });
-  };
+ const handleGoogle = async () => {
+   const callback = `${window.location.origin}${redirectTo}`;
+   await signIn.social({ provider: "google", callbackURL: callback });
+ };
+
 
   return (
     <div
@@ -107,7 +88,13 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form action={handleLoginAction} className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLoginAction(new FormData(e.target));
+          }}
+          className="space-y-4"
+        >
           <div>
             <label
               className={`block text-sm font-medium mb-1.5 ${isDark ? "text-gray-300" : "text-gray-700"}`}

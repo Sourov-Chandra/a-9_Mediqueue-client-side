@@ -23,6 +23,7 @@ import {
   BsGeoAlt,
   BsLaptop,
 } from "react-icons/bs";
+import { authFetch } from "@/lib/utils/jwt";
 
 const SUBJECTS = [
   "Mathematics",
@@ -71,18 +72,17 @@ export default function MyTutorsClient() {
     const fetchMyTutors = async () => {
       setLoading(true);
       try {
-        const res = await fetch(
+        const res = await authFetch(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/my-tutors?email=${encodeURIComponent(session.user.email)}`,
-        {
-          credentials: "include", 
-        }
+          {
+            credentials: "include",
+          },
         );
         if (!res.ok) throw new Error();
         const data = await res.json();
         setTutors(data);
-      } catch {
-        toast.error("Failed to load tutors");
-      } finally {
+      }
+      finally {
         setLoading(false);
       }
     };
@@ -134,7 +134,7 @@ export default function MyTutorsClient() {
     };
 
     try {
-      const res = await fetch(
+      const res = await authFetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/tutors/${selectedTutor._id}`,
         {
           method: "PATCH",
@@ -167,12 +167,12 @@ export default function MyTutorsClient() {
   const handleDelete = async () => {
     setDeleteLoading(true);
     try {
-      const res = await fetch(
+      const res = await authFetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/tutors/${deleteTarget._id}`,
-        { 
-         method: "DELETE",
-         credentials: "include",
-         },
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
       );
       if (!res.ok) throw new Error("Delete failed");
 

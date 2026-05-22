@@ -25,6 +25,7 @@ import {
   BsBuilding,
   BsArrowLeft,
 } from "react-icons/bs";
+import { authFetch } from "@/lib/utils/jwt";
 
 export default function TutorDetails({ tutor }) {
   const { isDark } = useGlobals();
@@ -46,11 +47,11 @@ export default function TutorDetails({ tutor }) {
 
       try {
 
-        const response = await fetch(
+        const response = await authFetch(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?studentEmail=${session.user.email}`,
-        {
-          credentials: "include", 
-        }
+          {
+            credentials: "include",
+          },
         );
 
         if (!response.ok) {
@@ -59,10 +60,7 @@ export default function TutorDetails({ tutor }) {
 
         const data = await response.json();
         setMyBookedSessionsList(data);
-      } catch (error) {
-        console.error("Error fetching bookings:", error);
-        toast.error("Failed to load your bookings. Please refresh the page.");
-      } finally {
+      }  finally {
         setFetchingBookings(false);
       }
     };
@@ -109,7 +107,7 @@ export default function TutorDetails({ tutor }) {
     };
 
     try {
-      const res = await fetch(
+      const res = await authFetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings`,
         {
           method: "POST",
@@ -128,11 +126,11 @@ export default function TutorDetails({ tutor }) {
       toast.success("Session booked successfully!");
       setModalOpen(false);
 
-      const refreshResponse = await fetch(
+      const refreshResponse = await authFetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?studentEmail=${session.user.email}`,
         {
           credentials: "include",
-        }
+        },
       );
       if (refreshResponse.ok) {
         const refreshedData = await refreshResponse.json();
