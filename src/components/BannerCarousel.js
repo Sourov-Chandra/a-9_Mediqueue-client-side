@@ -11,7 +11,7 @@ const slides = [
     description:
       "Get personalized 1-on-1 tutoring from experienced professionals in any field",
     image:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1588696254927-e79ea3dcd7f2?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     ctaText: "Find a Tutor",
     ctaLink: "/tutors",
   },
@@ -21,8 +21,8 @@ const slides = [
     description:
       "From Mathematics to Music, find expert tutors for over 100+ subjects",
     image:
-      "https://images.unsplash.com/photo-1513258496099-48168024aec0?w=1200&h=600&fit=crop",
-    ctaText: "Browse Subjects",
+      "https://plus.unsplash.com/premium_photo-1664910790735-cde4270a0b42?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    ctaText: "Quick Start",
     ctaLink: "/tutors",
   },
   {
@@ -31,9 +31,19 @@ const slides = [
     description:
       "Book sessions that fit your timetable - learn anytime, anywhere",
     image:
-      "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200&h=600&fit=crop",
+      "https://cdn.pixabay.com/photo/2024/09/05/19/46/ai-generated-9025826_960_720.jpg",
     ctaText: "Get Started",
     ctaLink: "/register",
+  },
+  {
+    id: 4,
+    title: "Learn from Industry Experts",
+    description:
+      "Get personalized 1-on-1 tutoring from experienced professionals in any field",
+    image:
+      "https://cdn.pixabay.com/photo/2026/05/16/15/05/norman_gil-ai-generated-10283012_1280.png",
+    ctaText: "Find a Tutor",
+    ctaLink: "/tutors",
   },
 ];
 
@@ -85,7 +95,7 @@ export default function BannerCarousel() {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="relative h-110 sm:h-150 md:h-210 lg:h-215 w-full overflow-hidden">
+      <div className="relative h-110 sm:h-150 md:h-180 lg:h-200 w-full overflow-hidden">
         <div
           className="flex transition-transform duration-500 ease-in-out h-full w-full"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}

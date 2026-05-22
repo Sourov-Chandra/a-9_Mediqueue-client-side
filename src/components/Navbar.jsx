@@ -46,7 +46,7 @@ export default function Navbar() {
   }, [profileOpen]);
 
   const isLoggedIn = !!session;
-  const userEmail = session?.user?.email || null;
+  const userName = session?.user?.name || null;
 
   const handleLogout = async () => {
     await clearJWT();
@@ -176,13 +176,20 @@ export default function Navbar() {
                     </div>
                   )}
                 </button>
+
                 {profileOpen && (
                   <div className="absolute right-0 mt-2 w-48 rounded-lg shadow-xl border py-2 z-50 bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                    <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
-                      <p className="text-sm font-medium truncate text-gray-700 dark:text-gray-200">
-                        {userEmail || "User"}
-                      </p>
-                    </div>
+                    <Link
+                      href="/profile"
+                      onClick={() => setProfileOpen(false)}
+                      className="block"
+                    >
+                      <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <p className="text-sm font-medium truncate text-gray-700 dark:text-gray-200">
+                          {userName || "User"}
+                        </p>
+                      </div>
+                    </Link>
                     <button
                       onClick={handleLogout}
                       className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 transition hover:bg-red-50 dark:hover:bg-red-900/20"
